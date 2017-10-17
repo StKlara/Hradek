@@ -1,0 +1,94 @@
+# -------------------------
+# UCODE INPUT EXAMPLE 1
+# -------------------------
+
+BEGIN Options
+  Verbose=0
+END Options
+
+# -------------------------
+# REGRESSION-CONTROL INFORMATION
+# -------------------------
+
+BEGIN UCODE_CONTROL_DATA KEYWORDS
+ModelName=flowpc.1 
+#ModelLengthUnits=meters
+ModelTimeUnits=days
+sensitivities=yes
+optimize=yes
+DataExchange=yes
+IntermedRes=yes
+FinalRes=yes
+FinalStats=yes
+END UCODE_CONTROL_DATA 
+
+BEGIN REG_GN_CONTROLS KEYWORDS
+tolpar=0.1              	
+maxiter=2   
+maxchange=3.0                         
+stats_on_nonconverge=yes 
+END REG_GN_CONTROLS                  
+
+BEGIN MODEL_COMMAND_LINES
+# Note single quotes around 'Command=value' are required if the
+# command includes one or more spaces, but are optinal otherwise
+'Command=flow.bat' 
+#'Command=call fterm.bat //opt/flow123d/bin/flow123d -s flow.yaml'
+#'Comman=flow123d.bat' misto toho
+#Command=fterm.bat //opt/flow123d/bin/flow123d -s flow.yaml'
+purpose=forward
+#'Command=copy.bat'
+CommandId=flowpc
+END MODEL_COMMAND_LINES
+
+
+# ---------------------
+# PARAMETER INFORMATION
+# ---------------------
+
+BEGIN PARAMETER_GROUPS KEYWORDS     
+  groupname=Default   ADJUSTABLE=yes
+END PARAMETER_GROUPS
+
+BEGIN PARAMETER_DATA TABLE
+  nrow=7  ncol=10  columnlabels groupname=default 
+  paramname 	startvalue adjustable	constrain lowerconstraint upperconstraint scalepval perturbamt transform tolpar senmethod
+  K_G01_V1 	0.1000E-07  	no	yes	1.0000E-8	1.0000E-5	1.0e-9 		0.2	yes 	0.05	1
+  K_G02_V1 	0.2290E-06  	yes	yes	1.0000E-8	1.0000E-5	1.0e-9 		0.2	yes 	0.05	1
+  K_G03_V1 	0.2093E-05  	yes	yes	1.0000E-8	1.0000E-5	1.0e-9 		0.2	yes 	0.05	1
+  K_G04_V1 	0.2293E-04 		no	yes	1.0000E-8	1.0000E-5	1.0e-9 		0.2	yes 	0.05	1
+  K_G05_V1 	0.5919E-06  	yes	yes	1.0000E-8	1.0000E-5	1.0e-9 		0.2	yes 	0.05	1
+  K_G06_V1 	0.9116E-06  	yes	yes	1.0000E-8	1.0000E-5	1.0e-9 		0.2	yes 	0.05	1
+  K_G07_V1 	0.8176E-06  	yes	yes	1.0000E-8	1.0000E-5	1.0e-9 		0.2	yes 	0.05	1
+END PARAMETER_DATA
+
+BEGIN DERIVED_PARAMETERS TABLE
+nrow=7 ncol=2 columnlabels
+DerParName     DerParEqn
+  K_G01_V2 	K_G01_V1/10
+  K_G02_V2 	K_G02_V1/10
+  K_G03_V2 	K_G03_V1/10
+  K_G04_V2 	K_G04_V1/10
+  K_G05_V2 	K_G05_V1/10
+  K_G06_V2 	K_G06_V1/10
+  K_G07_V2 	K_G07_V1/10
+END DERIVED_PARAMETERS 
+
+BEGIN OBSERVATION_GROUPS 
+  groupname=gen   plotsymbol=1 WtMultiplier=1.0
+  groupname=real  plotsymbol=2 WtMultiplier=1.0
+END OBSERVATION_GROUPS
+
+BEGIN OBSERVATION_DATA FILES
+  rawp_obs.pres
+END OBSERVATION_DATA FILES
+
+BEGIN MODEL_INPUT_FILES
+  modinfile=flow.yaml  TEMPLATEFILE= flow.yaml.tpl
+END MODEL_INPUT_FILES
+
+
+BEGIN MODEL_OUTPUT_FILES
+	 modoutfile= ./output/output_observed.txt     INSTRUCTIONFILE = rawp_ins.ins      category=obs
+END MODEL_OUTPUT_FILES
+
